@@ -70,18 +70,22 @@ describe Spree::OmnikassaPaymentResponse do
 
   describe "#payment" do
     before :each do
-      @attrs = { :amount => BigDecimal.new("24900")/100,
-          :order_id => 123,
-          :payment_method_id => 1,
-          :state => "processing" }
-      @payment = mock_model( Spree::Payment, @attrs)
+      @attrs = { 
+        :amount => BigDecimal.new("24900")/100,
+        :order_id => 123,
+        :payment_method_id => 1,
+        :state => "processing" }
+      @payment = mock_model(Spree::Payment, @attrs)
     end
+    
     it 'should try to find a Spree::Payment' do
       Spree::Payment.stub(:find).and_return(@payment)
       Spree::Payment.should_receive(:find)
       Spree::OmnikassaPaymentResponse.new(@seal, @data).payment
     end
+
     it 'should find Spree::Payment by order_id' do
+      puts @attrs
       stored_payment = Spree::Payment.new(@attrs)
       stored_payment.stub(:update_order).and_return true
       stored_payment.save
@@ -90,6 +94,7 @@ describe Spree::OmnikassaPaymentResponse do
       res = Spree::OmnikassaPaymentResponse.new(@seal, data)
       res.payment.should == stored_payment
     end
+
     it 'should raise RecordNotFound if no payment is found' do
       Spree::Payment.stub(:find).and_return(nil)
       expect { Spree::OmnikassaPaymentResponse.new(@seal, @data).payment }.to raise_error(ActiveRecord::RecordNotFound)
