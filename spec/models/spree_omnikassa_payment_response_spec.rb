@@ -85,8 +85,11 @@ describe Spree::OmnikassaPaymentResponse do
     end
 
     it 'should find Spree::Payment by order_id' do
-      puts @attrs
-      stored_payment = Spree::Payment.new(@attrs)
+      stored_payment = Spree::Payment.new()
+      stored_payment.amount = @attrs[:amount]
+      stored_payment.order_id = @attrs[:order_id]
+      stored_payment.payment_method_id = @attrs[:payment_method_id]
+      stored_payment.state = @attrs[:state]
       stored_payment.stub(:update_order).and_return true
       stored_payment.save
 

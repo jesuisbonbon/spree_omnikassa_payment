@@ -4,14 +4,11 @@
 <div id="checkout" data-hook>
   <%= render :partial => 'spree/shared/error_messages', :locals => { :target => @order } %>
 
-  <h1 data-hook="checkout_title"><%= t(:checkout) %></h1>
-  <ul id="checkout-steps-<%= @order.state %>" class="breadcrumbs progress-steps">
-    <% checkout_progress_states.each do |state| %>
-      <li class="<%= state.classes.join(" ") %>">
-        <%= state.text %>
-      </li>
-    <% end %>
-  </ul>
+  <div class="row" data-hook="checkout_header">
+    <h1 class="columns three alpha" data-hook="checkout_title"><%= t(:checkout) %></h1>
+    <div class="columns thirteen omega" data-hook="checkout_progress"><%= checkout_progress %></div>
+  </div>
+
 
   <%= form_tag(@payment_request.payment_method.url, :method => :post) do %>
   <div class="row" data-hook="checkout_content">
