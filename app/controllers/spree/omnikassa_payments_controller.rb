@@ -2,7 +2,9 @@ module Spree
   class OmnikassaPaymentsController < ApplicationController
     skip_before_filter :verify_authenticity_token
 
+
     def homecoming
+
       @payment_response = payment_response_from_params(params)
       @order = @payment_response.order
 
@@ -30,8 +32,10 @@ module Spree
     end
 
     def reply
+       
       @payment_response = payment_response_from_params(params)
       @order = @payment_response.order
+
       add_payment_if_not_exists
       message = "OmnikassaPaymentResponse posted: payment: # @payment_response.payment.id}; params: #{params.inspect}"
 
@@ -62,10 +66,13 @@ module Spree
         Rails.logger.error message
         @payment_response.payment.pend!
       end
-      render :text => @payment_response.response_level.to_s
+      
+      redirect_to(root_url) and return
+
     end
 
     private
+
     def advance_order_status upto_state
       @order.update_attribute(:state, upto_state.to_s)
       session[:order_id] = nil # Usually checkout_controllers after_complete is called, setting session[:order_id] to nil
@@ -76,12 +83,13 @@ module Spree
     # Allows both homecoming and reply to create a payment, but avoids having two payments.
     def add_payment_if_not_exists
       if @order.payments.empty?
-        Spree::Payment.create(
+        Spree::Payment.create({
           :order => @order,
           :source => @payment_response.payment_method,
           :payment_method => Spree::PaymentMethod::Omnikassa.fetch_payment_method,
           :amount => @order.total,
-          :response_code => @payment_response.attributes[:response_code]).started_processing!
+          :response_code => @payment_response.attributes[:response_code]}, 
+          :without_protection => true).started_processing!
       end
     end
 

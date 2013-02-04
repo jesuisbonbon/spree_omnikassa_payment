@@ -4,6 +4,18 @@ module Spree
     preference :key_version, :integer, :default => 1
     preference :secret_key,  :string,  :default => "002020000000001_KEY1"
 
+
+    attr_accessible :preferred_key_version
+    attr_accessible :preferred_secret_key
+    attr_accessible :preferred_merchant_id
+
+    attr_accessible :order, :source, :payment_method, :response_code
+
+
+    def displayable?(display_on)
+      (self.display_on == display_on.to_s || self.display_on.blank?)
+    end
+
     def actions
       %w{capture}
     end
@@ -25,7 +37,8 @@ module Spree
 
     def url
       if self.environment == "production"
-        "https://payment-webinit.omnikassa.rabobank.nl/paymentServlet"
+        "https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet"
+        #{}"https://payment-webinit.omnikassa.rabobank.nl/paymentServlet"
       else
         "https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet"
       end

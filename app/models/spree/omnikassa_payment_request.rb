@@ -14,13 +14,18 @@ module Spree
     def initialize(amount, transaction_reference, response_code = nil)
       @payment_method = Spree::PaymentMethod::Omnikassa.fetch_payment_method
       if transaction_reference.to_s.include? merchant_id
-        @amount = amount
-        @order_id = transaction_reference.to_s.match(merchant_id).post_match
+        @amount   = amount
+
+        rnd = rand(10..99)
+        id = transaction_reference.to_s.match(merchant_id).post_match
+        @order_id = "93#{rnd}#{id}"
+
         @response_code = response_code
       else
         raise "transactionReference cannot be parsed"
       end
     end
+
 
     # Generates datastring according to omnikassa
     # requirements §9. name=value|name=value.
@@ -67,7 +72,7 @@ module Spree
     end
 
     def normal_return_url
-      return_url_for_action "homecoming"
+      return_url_for_action "reply"
     end
 
     def automatic_response_url

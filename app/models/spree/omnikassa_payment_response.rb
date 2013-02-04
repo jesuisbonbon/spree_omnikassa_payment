@@ -22,14 +22,17 @@ module Spree
 
     # Finds a payment with provided parameters trough activeRecord.
     def payment
+      orderid = @attributes[:order_id][4..-1]
+
       Spree::Payment.find(:first, :conditions => {
         :payment_method_id => @payment_method.id,
-        :order_id => @attributes[:order_id]} ) || raise(ActiveRecord::RecordNotFound)
+        :order_id => orderid} ) || raise(ActiveRecord::RecordNotFound)
     end
 
     # Finds the order trough ActiveRecord
     def order
-      Spree::Order.find(@attributes[:order_id].to_i)
+      orderid = @attributes[:order_id][4..-1]
+      Spree::Order.find(orderid.to_i)
     end
 
     # Level can be :success, :pending, :cancelled or :failed
@@ -39,7 +42,6 @@ module Spree
           return level
         end
       end
-
       nil
     end
 
