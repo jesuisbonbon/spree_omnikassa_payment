@@ -3,33 +3,33 @@ module Spree
     skip_before_filter :verify_authenticity_token
 
 
-    def homecoming
+    # def homecoming
 
-      @payment_response = payment_response_from_params(params)
-      @order = @payment_response.order
+    #   @payment_response = payment_response_from_params(params)
+    #   @order = @payment_response.order
 
-      if not @payment_response.valid?
-        flash[:error] = "Invalid request"
-        redirect_to(root_url) and return
-      end
+    #   if not @payment_response.valid?
+    #     flash[:error] = "Invalid request"
+    #     redirect_to(root_url) and return
+    #   end
 
-      case @payment_response.response_level
-      when :success
-        flash[:info] = "Success!"
-      when :pending
-        flash[:info] = "Still pending. You will recieve a message"
-      when :cancelled
-        flash[:error] = "Order cancelled"
-      when :failed
-        flash[:error] = "Error occurred"
-      else
-        flash[:error] = "Unknown Error occurred"
-      end
+    #   case @payment_response.response_level
+    #   when :success
+    #     flash[:info] = "Success!"
+    #   when :pending
+    #     flash[:info] = "Still pending. You will recieve a message"
+    #   when :cancelled
+    #     flash[:error] = "Order cancelled"
+    #   when :failed
+    #     flash[:error] = "Error occurred"
+    #   else
+    #     flash[:error] = "Unknown Error occurred"
+    #   end
 
-      session[:order_id] = nil
+    #   session[:order_id] = nil
 
-      redirect_to(root_url) and return
-    end
+    #   redirect_to(root_url) and return
+    # end
 
     def reply
        
@@ -37,7 +37,9 @@ module Spree
       @order = @payment_response.order
 
       add_payment_if_not_exists
-      message = "OmnikassaPaymentResponse posted: payment: # @payment_response.payment.id}; params: #{params.inspect}"
+      message   = "OmnikassaPaymentResponse posted: payment: # @payment_response.payment.id}; params: #{params.inspect}"
+      msg_error = "Helaas er is iets fout gegaan met het bestellen, probeer het later opnieuw."
+      msg_ok    = "Bedankt voor uw bestelling."
 
       if @payment_response.valid?
         case @payment_response.response_level
@@ -45,28 +47,30 @@ module Spree
           Rails.logger.info message
           @payment_response.payment.complete!
           advance_order_status :complete
+          flash[:notice] = msg_ok
         when :pending
           Rails.logger.info message
-          @payment_response.payment.pend!
           advance_order_status :payment
+          flash[:notice] = msg_ok
         when :cancelled
           Rails.logger.info message
-          @payment_response.payment.failure!
-          @payment_response.order.cancel
+           @payment_response.order.cancel
+          flash[:error] = msg_error
         when :failed
           Rails.logger.error message
-          @payment_response.payment.failure!
-          @payment_response.order.cancel
+           @payment_response.order.cancel
+          flash[:error] = msg_error
         else
           Rails.logger.error message
-          @payment_response.payment.pend!
           @payment_response.order.cancel
+          flash[:error] = msg_error
         end
       else
         Rails.logger.error message
+        flash[:error] = msg_error
         @payment_response.payment.pend!
       end
-      
+
       redirect_to(root_url) and return
 
     end
