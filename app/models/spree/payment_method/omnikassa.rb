@@ -26,6 +26,7 @@ module Spree
 
     def capture(payment)
       #payments with state "checkout" must be moved into state "pending" first:
+      raise "capture"
       payment.update_attribute(:state, "pending") if payment.state == "checkout"
       payment.complete
       true

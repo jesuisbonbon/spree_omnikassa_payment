@@ -4,7 +4,7 @@ module Spree
     attr_reader :seal, :attributes, :payment_method
 
     def initialize seal, data
-      @payment_method = Spree::PaymentMethod::Omnikassa.fetch_payment_method
+      @payment_method = Spree::PaymentMethod::Omnikassa.fetch_payment_method # get omnikassa object
       @seal = seal
       @data = data
       @attributes = to_h
@@ -111,8 +111,8 @@ module Spree
           90,
           99],
         :cancelled => [
-          14, #invalid CSC or CVV
-          17, #cancelled by user
+          14,  #invalid CSC or CVV
+          17,  #cancelled by user
           75], #number attempts to enter cardnumer exceeded.
         :failed => [
           02,
