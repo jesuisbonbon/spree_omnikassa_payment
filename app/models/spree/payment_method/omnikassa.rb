@@ -38,8 +38,8 @@ module Spree
 
     def url
       if self.environment == "production"
-        "https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet"
-        #{}"https://payment-webinit.omnikassa.rabobank.nl/paymentServlet"
+        #"https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet"
+        "https://payment-webinit.omnikassa.rabobank.nl/paymentServlet"
       else
         "https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet"
       end

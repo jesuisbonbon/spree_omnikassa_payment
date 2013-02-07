@@ -1,6 +1,8 @@
 module Spree
   class OmnikassaPaymentsController < ApplicationController
     skip_before_filter :verify_authenticity_token
+    include Spree::Core::ControllerHelpers::Auth
+    ssl_required
 
     # def homecoming
     #   @payment_response = payment_response_from_params(params)
@@ -47,12 +49,12 @@ module Spree
         case @payment_response.response_level
         when :success
           Rails.logger.info message
-          @payment_response.payment.complete! unless @payment_response.payment.state == :complete
+          @payment_response.payment.complete! unless @payment_response.payment.state == 'completed'
           advance_order_status :complete
           flash[:notice] = msg_ok
         when :pending
           Rails.logger.info message
-          @payment_response.payment.pend!     unless @payment_response.payment.state == :pending
+          @payment_response.payment.pend!     unless @payment_response.payment.state == 'pending'
           advance_order_status :payment
           flash[:notice] = msg_ok
         when :cancelled
